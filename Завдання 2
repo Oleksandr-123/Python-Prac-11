@@ -1,0 +1,46 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("comptage_velo_2017_short.csv")
+
+print("Перші 5 рядків:")
+print(df.head())
+
+print("\nІнформація про датафрейм:")
+print(df.info())
+
+print("\nОписові характеристики:")
+print(df.describe())
+
+cols = df.columns
+bike_cols = []
+
+for c in cols:
+    if c != "Date":
+        bike_cols.append(c)
+
+total_year = df[bike_cols].sum().sum()
+print("\nЗагальна кількість велосипедистів за рік:", total_year)
+
+total_each = df[bike_cols].sum()
+print("\nКількість велосипедистів по кожній велодоріжці:")
+print(total_each)
+
+df["Date"] = pd.to_datetime(df["Date"])
+df["Month"] = df["Date"].dt.month
+
+monthly = df.groupby("Month")[bike_cols].sum()
+monthly_total = monthly.sum(axis=1)
+
+best_month = monthly_total.idxmax()
+print("\nНайпопулярніший місяць (за сумарною кількістю):", best_month)
+
+track = bike_cols[0]
+
+plt.figure(figsize=(10,5))
+plt.plot(monthly.index, monthly[track])
+plt.title("Завантаженість велодоріжки '" + track + "' по місяцях (2017)")
+plt.xlabel("Місяць")
+plt.ylabel("Кількість велосипедистів")
+plt.grid(True)
+plt.show()
