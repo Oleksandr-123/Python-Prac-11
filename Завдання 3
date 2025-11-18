@@ -1,0 +1,48 @@
+import nltk
+import matplotlib.pyplot as plt
+import string
+from nltk.corpus import stopwords, gutenberg
+from nltk.tokenize import word_tokenize
+
+# загрузка моделей
+nltk.download("punkt")
+nltk.download("punkt_tab")  # ← ДОДАНО
+nltk.download("stopwords")
+nltk.download("gutenberg")
+
+text = gutenberg.raw("shakespeare-caesar.txt")
+words = word_tokenize(text)
+
+print("Количество слов:", len(words))
+
+freq = {}
+for w in words:
+    w2 = w.lower()
+    freq[w2] = freq.get(w2, 0) + 1
+
+top10 = sorted(freq.items(), key=lambda x: x[1], reverse=True)[:10]
+print("Топ 10 слов:", top10)
+
+plt.bar([x[0] for x in top10], [x[1] for x in top10])
+plt.xticks(rotation=45)
+plt.show()
+
+stop = set(stopwords.words("english"))
+punct = set(string.punctuation)
+
+clean = []
+for w in words:
+    w2 = w.lower()
+    if w2 not in stop and w2 not in punct:
+        clean.append(w2)
+
+freq2 = {}
+for w in clean:
+    freq2[w] = freq2.get(w, 0) + 1
+
+top10_clean = sorted(freq2.items(), key=lambda x: x[1], reverse=True)[:10]
+print("Топ 10 после очистки:", top10_clean)
+
+plt.bar([x[0] for x in top10_clean], [x[1] for x in top10_clean])
+plt.xticks(rotation=45)
+plt.show()
